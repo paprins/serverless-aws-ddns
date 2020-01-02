@@ -35,16 +35,16 @@ $ sls create_domain
 ## Configure Synology
 
 ### Add new Service Provider
+> `Control Panel -> External Access`
 
-> `Control Panel -> External Access -> Customize`
-
-
+* Press `Customize`
 * `Service provider`: `<WHATEVER>`
 * `Query URL`: `https://URL?hostname=__HOSTNAME__&myip=__IP__&token=__PASSWORD__`
 
 Press `Save`
 
 ### Configure DDNS
+> `Control Panel -> External Access`
 
 * Press `Add`
 * Select `Service Provider`
