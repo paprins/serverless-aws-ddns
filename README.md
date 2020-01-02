@@ -8,6 +8,7 @@ Create a file called `config.<STAGE>.yml`. Contents should look something like t
 
 ```
 ---
+deployment_bucket: whatever-${self:provider.stage}-serverless-deployments
 route_53:
   zone_id: Z63XFG2QFVA8D
 

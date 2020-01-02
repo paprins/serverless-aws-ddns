@@ -9,7 +9,7 @@ provider:
   timeout: 30
   logRetentionInDays: 7
   deploymentBucket:
-    name: foobar-it-${self:provider.stage}-serverless-deployments
+    name: ${self:custom.config.deployment_bucket}
     serverSideEncryption: AES256
 
 plugins:
