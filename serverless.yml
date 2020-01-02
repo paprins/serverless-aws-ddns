@@ -1,0 +1,68 @@
+service: serverless-aws-ddns
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  memorySize: 128
+  timeout: 30
+  logRetentionInDays: 7
+  deploymentBucket:
+    name: foobar-it-${self:provider.stage}-serverless-deployments
+    serverSideEncryption: AES256
+
+plugins:
+  - serverless-deployment-bucket
+  - serverless-pseudo-parameters
+  - serverless-python-requirements
+  - serverless-iam-roles-per-function
+  - serverless-domain-manager
+
+package:
+  individually: true
+  exclude:
+    - '**'
+
+custom:
+  config: ${file(config.${self:provider.stage}.yml)}
+  pythonRequirements:
+    dockerizePip: true
+    slim: true
+  customDomain:
+    domainName: ${self:custom.config.custom_domain}
+    stage: ${self:provider.stage}
+    certificateName: ${self:custom.config.certificate_name}
+    createRoute53Record: true
+    endpointType: 'regional'
+    securityPolicy: tls_1_2
+
+functions:
+  ddns:
+    handler: index.lambda_handler
+    module: ddns
+    name: ${self:service}-${self:provider.stage}-handler
+    description: Serverless DDNS handler
+    environment:
+      LOG_LEVEL: INFO
+      POWERTOOLS_SERVICE_NAME: ${self:service}
+      ROUTE_53_ZONE_ID: ${self:custom.config.route_53.zone_id}
+    events:
+      -
+        http:
+          path: /update
+          method: GET
+          cors: true
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action: 
+          - route53:List*
+        Resource: arn:aws:route53:::hostedzone/*
+      -
+        Effect: "Allow"
+        Action:
+          - "route53:ChangeResourceRecordSets"
+        Resource: "arn:aws:route53:::hostedzone/${self:custom.config.route_53.zone_id}"
+    package:
+      include:
+        - ddns/**
