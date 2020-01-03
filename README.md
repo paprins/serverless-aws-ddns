@@ -29,7 +29,7 @@ As mentioned in the 'Configure' section, I added token based authentication to t
 
 ### Dependencies
 
-I used (`cryptography`)[https://pypi.org/project/cryptography/]. Create a `venv` and run `pip3 install -r requirements.txt`.
+I used [`cryptography`](https://pypi.org/project/cryptography/). Create a `venv` and run `pip3 install -r requirements.txt`.
 
 ### Generate Secret
 > Only once per environment/stage.
