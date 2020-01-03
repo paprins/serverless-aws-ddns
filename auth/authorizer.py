@@ -56,10 +56,15 @@ class Authorizer(object):
             authpolicy.region = tmp[3]
             authpolicy.stage = api_gateway_arn[1]
 
-            authpolicy.allow_all_methods()
+            logger.info(decoded_token)
+
+            if decoded_token.decode() == self.params['hostname']:
+                authpolicy.allow_all_methods()
+            else:
+                authpolicy.deny_all_methods()
 
         except InvalidToken:
-            authpolicy.deny_all_methods()            
+            authpolicy.deny_all_methods()
 
         policy = authpolicy.build()
 

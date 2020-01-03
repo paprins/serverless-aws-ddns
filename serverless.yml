@@ -93,7 +93,7 @@ resources:
     AuthorizerApiGatewayAuthorizer:
       Type: "AWS::ApiGateway::Authorizer"
       Properties:
-        AuthorizerResultTtlInSeconds: 3600
+        AuthorizerResultTtlInSeconds: 0
         IdentitySource: method.request.querystring.token
         Name: APIAuthorizer
         RestApiId:
