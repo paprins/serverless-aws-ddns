@@ -38,21 +38,36 @@ custom:
     securityPolicy: tls_1_2
 
 functions:
+  authorizer:
+    handler: authorizer.lambda_handler
+    module: auth
+    name: ${self:service}-${self:provider.stage}-authorizer
+    description: Serverless DDNS authorizer
+    environment:
+      LOG_LEVEL: ${self:custom.config.log_level}
+      POWERTOOLS_SERVICE_NAME: ${self:service}-authorizer
+      SECRET_KEY: ${self:custom.config.secret_key}
+    package:
+      include:
+        - auth/**
+
   ddns:
     handler: index.lambda_handler
     module: ddns
     name: ${self:service}-${self:provider.stage}-handler
     description: Serverless DDNS handler
     environment:
-      LOG_LEVEL: INFO
+      LOG_LEVEL: ${self:custom.config.log_level}
       POWERTOOLS_SERVICE_NAME: ${self:service}
       ROUTE_53_ZONE_ID: ${self:custom.config.route_53.zone_id}
+      ROUTE_53_ZONE_NAME: ${self:custom.config.route_53.zone_name}
     events:
       -
         http:
           path: /update
           method: GET
           cors: true
+          authorizer: authorizer
     iamRoleStatements:
       - Effect: "Allow"        
         Action: 
@@ -66,3 +81,21 @@ functions:
     package:
       include:
         - ddns/**
+
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: "AWS::ApiGateway::RestApi"
+      Properties:
+        Description: Serverless DDNS API for ${self:provider.stage} environment
+        Name: ${self:service}-${self:provider.stage}
+
+    AuthorizerApiGatewayAuthorizer:
+      Type: "AWS::ApiGateway::Authorizer"
+      Properties:
+        AuthorizerResultTtlInSeconds: 3600
+        IdentitySource: method.request.querystring.token
+        Name: APIAuthorizer
+        RestApiId:
+          Ref: "ApiGatewayRestApi"
+        Type: REQUEST

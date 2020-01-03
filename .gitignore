@@ -4,6 +4,7 @@
 
 ### Custom ###
 config.*.yml
+.venv
 
 ### macOS ###
 # General

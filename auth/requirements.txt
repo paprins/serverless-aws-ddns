@@ -1,0 +1,3 @@
+aws-lambda-powertools
+aws_lambda_logging
+cryptography==2.8

@@ -62,14 +62,16 @@ class RequestHandler(object):
         """
         Check if incoming request is valid.
         """
-        for p in ['hostname','myip','token']:
+        for p in ['hostname','myip']:
             if not p in self.params:
                 raise InvalidRequest(f"Missing request parameter '{p}'")
 
-        if not self.__is_valid_fqdn(self.params['hostname']):
+        # validate hostname
+        if not self.__is_valid_fqdn(f"{self.params['hostname']}.{ROUTE_53_ZONE_NAME}"):
             # TODO: Return 'service_ddns_status_not_fqdn
-            raise InvalidRequest('Invalid hostname specified.')
+            raise InvalidRequest(f"Invalid fqdn specified: {self.params['hostname']}.{ROUTE_53_ZONE_NAME}")
 
+        # validate ip
         try:
             ipaddress.ip_address(self.params['myip'])
         except ValueError as e:
@@ -89,7 +91,7 @@ class RequestHandler(object):
                 {
                     'Action': 'UPSERT',
                     'ResourceRecordSet': {
-                        'Name': self.params['hostname'],
+                        'Name': f"{self.params['hostname']}.{ROUTE_53_ZONE_NAME}",
                         'Type': 'A',
                         'TTL': 3600,
                         'ResourceRecords': [
