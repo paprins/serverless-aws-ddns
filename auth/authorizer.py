@@ -67,13 +67,13 @@ class Authorizer(object):
 
         policy = authpolicy.build()
 
-        logger.info(policy)
+        logger.debug(policy)
 
         return policy
 
 def lambda_handler(event, context):
     try:
-        logger.info(event)
+        logger.debug(event)
 
         clazz = Authorizer(event)
         return clazz.validate()
