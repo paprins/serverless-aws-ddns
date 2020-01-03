@@ -56,8 +56,7 @@ class Authorizer(object):
             authpolicy.region = tmp[3]
             authpolicy.stage = api_gateway_arn[1]
 
-            logger.info(decoded_token)
-
+            # Check if decoded token is the 'hostname'
             if decoded_token.decode() == self.params['hostname']:
                 authpolicy.allow_all_methods()
             else:
