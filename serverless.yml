@@ -8,24 +8,25 @@ provider:
   memorySize: 128
   timeout: 30
   logRetentionInDays: 7
+  logs:
+    restApi: false
   deploymentBucket:
     name: ${self:custom.config.deployment_bucket}
     serverSideEncryption: AES256
 
 plugins:
   - serverless-deployment-bucket
-  - serverless-pseudo-parameters
   - serverless-python-requirements
   - serverless-iam-roles-per-function
   - serverless-domain-manager
 
 package:
   individually: true
-  exclude:
-    - '**'
+  patterns:
+    - '!**'
 
 custom:
-  config: ${file(config.${self:provider.stage}.yml)}
+  config: ${file(vars/${self:provider.stage}.yml)}
   pythonRequirements:
     dockerizePip: true
     slim: true
@@ -47,8 +48,10 @@ functions:
       LOG_LEVEL: ${self:custom.config.log_level}
       POWERTOOLS_SERVICE_NAME: ${self:service}-authorizer
       SECRET_KEY: ${self:custom.config.secret_key}
+    layers:
+      -  arn:aws:lambda:${aws:region}:017000801446:layer:AWSLambdaPowertoolsPython:26
     package:
-      include:
+      patterns:
         - auth/**
 
   ddns:
@@ -78,8 +81,10 @@ functions:
         Action:
           - "route53:ChangeResourceRecordSets"
         Resource: "arn:aws:route53:::hostedzone/${self:custom.config.route_53.zone_id}"
+    layers:
+      -  arn:aws:lambda:${aws:region}:017000801446:layer:AWSLambdaPowertoolsPython:26
     package:
-      include:
+      patterns:
         - ddns/**
 
 resources:

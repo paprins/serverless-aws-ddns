@@ -1,0 +1,9 @@
+---
+deployment_bucket: foobar-it-dev-serverless-deployments
+custom_domain: ddns.foobar-it.com
+certificate_name: ddns.foobar-it.com
+log_level: INFO
+secret_key: PmkWuruXQLc33fTp_ZmnwsCs5FuELmG-FBdS1OiM38w=
+route_53:
+  zone_id: Z43XFZ2QFVA4D
+  zone_name: foobar-it.com

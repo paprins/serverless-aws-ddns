@@ -4,9 +4,11 @@ import json
 import re
 import ipaddress
 import boto3
-from aws_lambda_powertools.logging import logger_setup, logger_inject_lambda_context
+from aws_lambda_powertools import Logger
+import logging
 
-logger = logger_setup(boto_level='CRITICAL') 
+logger = Logger()
+logging.getLogger('botocore').setLevel('WARNING')
 
 try:
   ROUTE_53_ZONE_ID   = os.environ['ROUTE_53_ZONE_ID']
@@ -115,7 +117,7 @@ class RequestHandler(object):
         }
 
 
-@logger_inject_lambda_context
+@logger.inject_lambda_context
 def lambda_handler(event, context):
 
     logger.debug(event)

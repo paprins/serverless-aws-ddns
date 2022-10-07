@@ -4,10 +4,12 @@ import sys
 import traceback
 
 from cryptography.fernet import Fernet, InvalidToken
-from aws_lambda_powertools.logging import logger_setup, logger_inject_lambda_context
+from aws_lambda_powertools import Logger
+import logging
 from policy import AuthPolicy, HttpVerb
 
-logger = logger_setup(boto_level='CRITICAL') 
+logger = Logger()
+logging.getLogger('botocore').setLevel('WARNING')
 
 try:
   SECRET_KEY = os.environ['SECRET_KEY']
